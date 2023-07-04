@@ -1,0 +1,67 @@
+.MuiTableRow-root > * {
+  padding: 10px;
+}
+
+.MuiTableRow-root.MuiTableRow-head > * {
+  font-weight: bold !important;
+}
+
+.Table td,
+th {
+  border: none !important;
+}
+
+.Table:first-child {
+  border-radius: 0.7rem !important;
+}
+.status {
+  padding: 8px;
+  border-radius: 9px;
+}
+
+.Details {
+  color: #00b5ff !important;
+}
+.statusBar:hover {
+  cursor: pointer;
+  background-color: #e2e7e9;
+}
+.statusBarActive {
+  color: #F9813A;
+  border-bottom: #F9813A solid 1px;
+  transform: scale(1.1);
+}
+.statusBarActive:hover {
+  cursor: pointer;
+}
+.order__view-btn {
+  padding: 10px 10px;
+  outline: none;
+  border: none;
+  background-color: #FF919D;
+  color: white;
+  border-radius: 10px;
+}
+.order__view-btn:hover { 
+  opacity: 0.9;
+  cursor: pointer;
+  
+}
+
+@media screen and (max-width: 1200px) {
+  .Table {
+    width: 170%;
+    margin-top: 2rem;
+  }
+}
+
+
+@media screen and (max-width: 768px) {
+  .Table{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 23rem;
+  }
+}

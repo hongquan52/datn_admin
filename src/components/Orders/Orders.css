@@ -1,0 +1,81 @@
+.MainDash{
+    /* padding-top: 1rem; */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+/* ORDER DETAIL CSS */
+.orderDetail__info-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.orderDetail__label {
+    width: 90px;
+    font-weight: bold;
+}
+.orderDetail__label1 {
+    width: 50px;
+    font-weight: bold;
+}
+.orderDetail__input {
+    width: 250px;
+    height: 40px;
+    border: none;
+    outline: none;
+    margin-left: 50px;
+    background-color: antiquewhite;
+    border-radius: 10px;
+    font-size: 20;
+}
+.orderDetail__input1 {
+    width: 250px;
+    height: 60px;
+    border: none;
+    outline: none;
+    margin-left: 50px;
+    background-color: antiquewhite;
+    border-radius: 10px;
+    font-size: 20;
+}
+.orderDetail__footer {
+    margin-top: 20px;
+}
+.orderDetail__footer button {
+    color: white;
+    outline: none;
+    border: none;
+    padding: 10px;
+    font-weight: bold;
+    margin-left: 10px;
+    width: 60px;
+}
+.orderDetail__deliveryBtn {
+    color: black;
+    outline: none;
+    border: none;
+    padding: 10px;
+    font-weight: bold;
+    margin-left: 10px;
+    width: 100px;
+    background-color: antiquewhite;
+}
+
+.orderDetail__footer button:hover {
+    cursor: pointer;
+    opacity: 0.9;
+}
+
+@media screen and (max-width: 1200px) {
+    .MainDash{
+        justify-content:flex-start;
+        margin-top: 2rem;
+    }
+}
+
+@media screen and (max-width: 768px)
+{
+    .MainDash{
+        align-items: center;
+    }
+}
