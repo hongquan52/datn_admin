@@ -180,7 +180,11 @@ const OrderDetail = () => {
                 <button style={{ backgroundColor: 'green' }} onClick={() => updateStatus('Confirmed')}>
                     <CheckIcon />
                 </button>
-                <button style={{ backgroundColor: '#F9813A' }} /*disabled={true}*/ onClick={() => setOpen(true)}>
+                <button 
+                    style={{ backgroundColor: '#F9813A' }} 
+                    onClick={() => setOpen(true)}
+                    disabled={ orderDetailData.status === 'Ordered' ? false : true }
+                >
                     <LocalShippingIcon />
                 </button>
                 <button style={{ backgroundColor: 'red' }} onClick={() => updateStatus('Canceled')}>

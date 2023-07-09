@@ -1,6 +1,4 @@
-import React, { useEffect, useState } from "react";
-import CustomerReview from "../CustomerReview/CustomerReview1";
-import CustomerReview2 from "../CustomerReview/CustomerReview2";
+import React, { Suspense, useEffect, useState } from "react";
 
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -13,7 +11,11 @@ import Paper from "@mui/material/Paper";
 import "./Statics.css";
 import axios from "axios";
 import { baseURL } from "../../constants/baseURL";
-import CardsAmountOrder from "../Cards/CardsAmountOrder";
+
+const CardsAmountOrder = React.lazy(() => import("../Cards/CardsAmountOrder"));
+const CustomerReview = React.lazy(() => import("../CustomerReview/CustomerReview1"));
+const CustomerReview2 = React.lazy(() => import("../CustomerReview/CustomerReview2"));
+
 const Statics = () => {
     const [tab, settab] = useState('Order');
     const [salestProduct, setSalestProduct] = useState([]);
@@ -54,28 +56,32 @@ const Statics = () => {
                 }
 
             </div>
-            {
-                tab === 'Last 7 days' && (
-                    <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-                        <div>
-                            <div>Revenue last 7 days (millions)</div>
-                            <CustomerReview revenue7Days={revenue7Days} />
+            <Suspense fallback={<p>Loading...</p>}>
+                {
+                    tab === 'Last 7 days' && (
+                        <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+                            <div>
+                                <div>Revenue last 7 days (millions)</div>
+                                <CustomerReview revenue7Days={revenue7Days} />
+                            </div>
+                            <div>
+                                <div>New customer last 7 days</div>
+                                <CustomerReview2 revenue7Days={newCustomer} />
+                            </div>
                         </div>
+                    )
+                }
+            </Suspense>
+            <Suspense fallback={<p>Loading...</p>}>
+                {
+                    tab === 'Order' && (
                         <div>
-                            <div>New customer last 7 days</div>
-                            <CustomerReview2 revenue7Days={newCustomer} />
-                        </div>
-                    </div>
-                )
-            }
-            {
-                tab === 'Order' && (
-                    <div>
 
-                        <CardsAmountOrder />
-                    </div>
-                )
-            }
+                            <CardsAmountOrder />
+                        </div>
+                    )
+                }
+            </Suspense>
             {
                 tab === 'Product' && (
                     <div style={{ display: 'flex' }}>
@@ -102,7 +108,7 @@ const Statics = () => {
                                                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                                             >
                                                 <TableCell component="th" scope="row" style={{display: 'flex', alignItems: 'center'}}>
-                                                    <img src={row.product.thumbnail}
+                                                    <img src={row.product.thumbnail.slice(0,-1)}
                                                         style={{width: 50, height: 50}}
                                                     />
                                                     <p style={{marginLeft: 5, fontSize: 13, fontWeight: 500}}>{row.product.name}</p>

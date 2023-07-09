@@ -121,7 +121,7 @@ export default function BasicTable() {
             Review product
           </Typography>
           <div style={{display: 'flex', alignItems: 'center', marginTop: 30}}>
-            <img src={reviewDetail.productThumbnail.slice(0,-1)} style={{height: 100, width: 100}} />
+            <img src={reviewDetail?.productThumbnail?.slice(0,-1)} style={{height: 100, width: 100}} />
             <h5 style={{fontSize: 25, marginLeft: 30}}>{reviewDetail.productName}</h5>
           </div>
           <div>
