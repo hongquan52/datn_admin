@@ -8,9 +8,12 @@ import { baseURL } from "../../constants/baseURL";
 import AddIcon from '@mui/icons-material/Add';
 import StarRateIcon from '@mui/icons-material/StarRate';
 import LockIcon from '@mui/icons-material/Lock';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
 import EditIcon from '@mui/icons-material/Edit';
-import LoopIcon from '@mui/icons-material/Loop';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function BasicTable() {
   const navigate = useNavigate();
@@ -20,6 +23,19 @@ export default function BasicTable() {
   const [category, setCategory] = React.useState('All');
   // SEARCH TEXT STATE
   const [searchText, setSearchText] = React.useState('');
+
+  const [forSaleState, setForSaleState] = React.useState(false);
+  React.useEffect(() => {
+    // GET ALL PRODUCT
+    axios.get(`${baseURL}/api/v1/product`)
+      .then((res) => {
+        setProduct(res.data);
+        setProductOriginal(res.data);
+      })
+      .catch((err) => console.log(err))
+
+  }, [forSaleState])
+
   React.useEffect(() => {
     // GET ALL PRODUCT
     axios.get(`${baseURL}/api/v1/product`)
@@ -30,6 +46,11 @@ export default function BasicTable() {
       .catch((err) => console.log(err))
 
   }, [])
+  const showToastMessageSuccess = (message) => {
+    toast.success(message, {
+        position: toast.POSITION.TOP_RIGHT
+    });
+  };
   React.useEffect(() => {
     if (brand === 'All') {
       if (category === 'All') {
@@ -80,7 +101,7 @@ export default function BasicTable() {
     { field: "price", headerName: "Price", width: 120 },
     { field: "discount", headerName: "Promotion", width: 100 },
     {
-      field: "rate", headerName: "Rate", width: 70, renderCell: (params) => {
+      field: "rate", headerName: "Rate", width: 120, renderCell: (params) => {
         return (
           <div style={{ display: 'flex', flexDirection: 'row' }}>
             <p style={{ margin: 'auto' }}>{params.row.rate.toFixed(2)}</p> <StarRateIcon />
@@ -89,19 +110,41 @@ export default function BasicTable() {
       }
     },
     {
-      field: "action", headerName: "Action", width: 150, renderCell: (params) => {
+      field: "action", headerName: "Action", width: 200, renderCell: (params) => {
         return (
           <div style={{ display: 'flex' }}>
             <button
               style={{ padding: 10, outline: 'none', border: 'none', backgroundColor: '#FF919D', color: "white" }}
-              onClick={() =>navigate(`/product/${params.row.id}`)}
+              onClick={() => navigate(`/product/${params.row.id}`)}
             >
               <EditIcon /></button>
             <button
-              style={{ padding: 10, outline: 'none', border: 'none', backgroundColor: 'grey', color: "white", marginLeft: 10 }}
-              onClick={() => alert(params.row.id)}
+              style={{ padding: 10, outline: 'none', border: 'none', backgroundColor: 'grey', color: "white", marginLeft: 10, cursor: 'pointer' }}
+              onClick={() => {
+                axios.put(`${baseURL}/api/v1/product/setForSale?id=${params.row.id}&forSale=${!params.row.forSale}`)
+                  .then((res) => {
+                    showToastMessageSuccess(res.data.message);
+                    setForSaleState(!forSaleState);
+                  })
+                  .catch((err) => console.log(err))
+              }}
             >
-              <LockIcon /></button>
+              {
+                params.row.forSale ? <LockIcon /> : <LockOpenIcon />
+              }
+            </button>
+            <button
+              style={{ padding: 10, outline: 'none', border: 'none', backgroundColor: 'red', color: "white", marginLeft: 10, cursor: 'pointer' }}
+              onClick={() => {
+                axios.delete(`${baseURL}/api/v1/product/softDelete?id=${params.row.id}&deleted=${true}`)
+                .then((res) => {
+                  showToastMessageSuccess(res.data.message);
+                  setForSaleState(!forSaleState);
+                })
+                .catch((err) => console.log(err))
+              }}
+            >
+              <DeleteIcon /></button>
           </div>
         )
       }
@@ -120,6 +163,7 @@ export default function BasicTable() {
 
   return (
     <>
+      <ToastContainer />
       <div style={{ display: 'flex', justifyContent: "flex-end" }}>
         <div style={{ display: 'flex', alignItems: "center", width: 134, height: 56, marginRight: 320 }}>
           <div className="productFilter__search-input">
@@ -129,7 +173,7 @@ export default function BasicTable() {
               onChange={(e) => setSearchText(e.target.value)}
             />
           </div>
-          <Button style={{marginLeft: 20, width: 300}} onClick={() => navigate('/new-product')}><AddIcon /> Product</Button>
+          <Button style={{ marginLeft: 20, width: 300 }} onClick={() => navigate('/new-product')}><AddIcon /> Product</Button>
 
         </div>
         <FormControl
@@ -179,11 +223,13 @@ export default function BasicTable() {
         }}>Refresh</Button>
 
       </div>
-      <div className="Table" style={{overflowY: 'scroll', height: 500}}>
+      <div className="Table" style={{ overflowY: 'scroll', height: 500 }}>
 
         <DataGrid className='data__grid'
-          style={{ backgroundColor: 'white'}}
-          rows={searchedProduct}
+          style={{ backgroundColor: 'white' }}
+          rows={searchedProduct.filter(
+            (item) => item.deleted === false
+          )}
           columns={columns}
 
           pageSize={6}

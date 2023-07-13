@@ -50,6 +50,11 @@ export const SidebarData = [
     heading: 'Review',
     path: '/review'
   },
+  {
+    icon: UilChart,
+    heading: 'Chat',
+    path: '/chat-box'
+  },
 ];
 
 // Analytics Cards Data

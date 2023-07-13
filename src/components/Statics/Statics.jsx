@@ -11,12 +11,16 @@ import Paper from "@mui/material/Paper";
 import "./Statics.css";
 import axios from "axios";
 import { baseURL } from "../../constants/baseURL";
+import { useNavigate } from "react-router-dom";
 
 const CardsAmountOrder = React.lazy(() => import("../Cards/CardsAmountOrder"));
 const CustomerReview = React.lazy(() => import("../CustomerReview/CustomerReview1"));
 const CustomerReview2 = React.lazy(() => import("../CustomerReview/CustomerReview2"));
 
 const Statics = () => {
+
+    const navigate = useNavigate();
+
     const [tab, settab] = useState('Order');
     const [salestProduct, setSalestProduct] = useState([]);
     const [newCustomer, setNewCustomer] = useState([]);
@@ -95,10 +99,10 @@ const Statics = () => {
                                 <Table sx={{ minWidth: 500}} aria-label="simple table">
                                     <TableHead>
                                         <TableRow>
-                                            <TableCell width={200}>Name</TableCell>
+                                            <TableCell width={500}>Name</TableCell>
                                             <TableCell align="left">Revenue</TableCell>
                                             <TableCell align="left" width={70}>Amount sales</TableCell>
-                                            <TableCell align="left">Action</TableCell>
+                                            {/* <TableCell align="left">Action</TableCell> */}
                                         </TableRow>
                                     </TableHead>
                                     <TableBody style={{ color: "white" }}>
@@ -115,16 +119,18 @@ const Statics = () => {
                                                 </TableCell>
                                                 <TableCell align="left">{row.product.price*row.quantity}</TableCell>
                                                 <TableCell align="left">{row.quantity}</TableCell>
-                                                <TableCell align="left" className="Details" onClick={() => alert('product ID')}>Details</TableCell>
+                                                {/* <TableCell align="left" className="Details" style={{cursor: 'pointer'}} onClick={() => {
+                                                    navigate(`product/${row.product.id}`)
+                                                }}>Details</TableCell> */}
                                             </TableRow>
                                         ))}
                                     </TableBody>
                                 </Table>
                             </TableContainer>
                         </div>
-                        <div style={{ width: '100%', height: '100%', backgroundColor: 'grey', margin: 5 }}>
+                        {/* <div style={{ width: '100%', height: '100%', backgroundColor: 'grey', margin: 5 }}>
                             <h5 style={{ fontSize: 22, textAlign: 'center' }}>Sản phẩm đánh giá cao nhất</h5>
-                        </div>
+                        </div> */}
                     </div>
                 )
             }

@@ -1,5 +1,6 @@
 import React, {Suspense} from 'react'
 import { Routes, Route, Navigate, useParams } from 'react-router-dom'
+
 // import MainDash from '../components/MainDash/MainDash'
 // import Orders from '../components/Orders/Orders'
 // import Review from '../components/Review/Review'
@@ -12,6 +13,7 @@ import { Routes, Route, Navigate, useParams } from 'react-router-dom'
 // import ProductDetail from '../components/Products/ProductDetail'
 // import NewProduct from '../components/Products/NewProduct'
 
+const ChatBox = React.lazy(() => import('../components/ChatBox/ChatBox'));
 const Login = React.lazy(() => import('../components/Login/Login'));
 const MainDash = React.lazy(() => import('../components/MainDash/MainDash'));
 const Orders = React.lazy(() => import('../components/Orders/Orders.'));
@@ -43,6 +45,7 @@ const Routers = () => {
         <Route path='/customer' element={<Customer />} />
         <Route path='/new-customer' element={<NewCustomer />} />
         <Route path='/static' element={<Statics />} />
+        <Route path='/chat-box' element={<ChatBox />} />
         
       </Routes>
     </Suspense>

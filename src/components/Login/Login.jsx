@@ -1,5 +1,6 @@
 import React , {useState} from 'react'
 import axios from 'axios';
+import jwtDecode from 'jwt-decode'
 import { baseURL } from '../../constants/baseURL';
 import './Login.css'
 import { useNavigate } from 'react-router-dom';
@@ -17,11 +18,20 @@ const Login = () => {
                 if(res.data.status === 'OK') {
                     sessionStorage.setItem('accessToken', res.data.data.accessToken);
                     sessionStorage.setItem('userName', res.data.data.name);
+
+                    decoded(res.data.data.accessToken);
                     navigate('/home');
                     window.location.reload();
                 }
             })
     }
+    const decoded = (token) => {
+        const decoded = jwtDecode(token);
+        const manguoidung = decoded.sub
+        const manguoidung1 = parseInt(manguoidung);
+        sessionStorage.setItem("userID", manguoidung1);
+        
+      }
     return (
         <div style={{ display: 'flex', width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
             <div className='login__container'>

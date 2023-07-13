@@ -27,6 +27,7 @@ const Sidebar = () => {
   console.log(window.innerWidth)
   const logoutHandle = () => {
     sessionStorage.removeItem('accessToken');
+    sessionStorage.removeItem('userID');
     navigate('/login');
     window.location.reload();
   }

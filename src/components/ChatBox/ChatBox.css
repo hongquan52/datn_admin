@@ -1,0 +1,121 @@
+.MainDash{
+    /* padding-top: 1rem; */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+.chat__container {
+    display: flex;
+    flex-direction: row;
+}
+.chat__sidebar-container {
+    width: 300px;
+    overflow-y: scroll;
+    background-color: white;
+    height: 600px;
+}
+.chat__sidebar-header {
+    margin-bottom: 20px;
+    padding: 10px;
+}
+.chat__sidebar-header input {
+    padding: 10px;
+    background-color: antiquewhite;
+    outline: none;
+    border: none;
+    border-radius: 10px;
+
+}
+.chat__sidebar-item {
+    display: flex;
+    border-bottom: black solid 1px;
+    padding: 10px;
+}
+.chat__sidebar-item img {
+    width: 60px;
+    height: 60px;
+    border-radius: 30px;
+}
+.chat__sidebar-item:hover {
+    cursor: pointer;
+    opacity: 0.9;
+    background-color: white;
+}
+.chat__sidebar-item h5 {
+    font-weight: bold;
+    margin-left: 10px;
+}
+.chat__content-container {
+    border-left: black solid 1px;
+    background-color: white;
+    width: 700px;
+}
+.chat__content-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 10px;
+    border-bottom: black solid 0.5px;
+}
+.chat__content-header img {
+    width: 60px;
+    height: 60px;
+    border-radius: 30px;
+}
+.chat__content-header h5 {
+    font-weight: bold;
+    margin-left: 10px;
+}
+.chat__content-content {
+    overflow-y: scroll;
+    height: 400px;
+    padding: 10px;
+}
+.chat__content-message {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
+.chat__content-message img {
+    height: 40px;
+    width: 40px;
+    border-radius: 20px;
+}
+.chat__content-message p {
+    padding: 10px;
+    width: fit-content;
+    border-radius: 10px;
+}
+.chat__content-footer{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    padding: 10px;
+}
+.chat__content-footer input {
+    width: 600px;
+}
+.chat__content-footer button{
+    background-color: #FF919D;
+    color: black;
+    padding: 15px;
+    border-radius: 5px;
+    outline: none;
+    border: none;
+    font-weight: bold;
+}
+
+@media screen and (max-width: 1200px) {
+    .MainDash{
+        justify-content:flex-start;
+        margin-top: 2rem;
+    }
+}
+
+@media screen and (max-width: 768px)
+{
+    .MainDash{
+        align-items: center;
+    }
+}

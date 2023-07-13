@@ -35,6 +35,7 @@ const ProductDetail = () => {
     const [selectedImage2, setSelectedImage2] = useState('');
     const [selectedImage3, setSelectedImage3] = useState('');
 
+    const [imagesProductOriginal, setImagesProductOriginal] = useState([]);
     const [imagesProduct, setImagesProduct] = useState([]);
     const [originalImage1, setOriginalImage1] = useState('');
     const [originalImage2, setOriginalImage2] = useState('');
@@ -50,7 +51,7 @@ const ProductDetail = () => {
     console.log(category, brand)
     // UPDATE PRODUCT
     const updateProduct = (data) => {
-        if (selectedImage === '') {
+        if (selectedImage === '' && selectedImage1 === '' && selectedImage2 === '' && selectedImage3 === '') {
             
             var dataForm = new FormData();
             dataForm.append('name', data.name);
@@ -69,16 +70,38 @@ const ProductDetail = () => {
                 .catch((err) => console.log("Update new product err: ", err))
         }
         else {
+            {
+                selectedImage1 !== '' &&
+                imagesProduct.push(selectedImage1);
+            }
+            {
+                selectedImage2 !== '' &&
+                imagesProduct.push(selectedImage2);
+            }
+            {
+                selectedImage3 !== '' &&
+                imagesProduct.push(selectedImage3);
+            }
+    
             var dataForm = new FormData();
             dataForm.append('name', data.name);
             dataForm.append('inventory', data.inventory);
             dataForm.append('price', data.price);
             dataForm.append('description', data.description);
-            dataForm.append('thumbnail', selectedImage);
             dataForm.append('brand', brand);
             dataForm.append('category', category);
             dataForm.append('groupProduct', '1');
-
+            
+            if(selectedImage !== '') {
+                dataForm.append('thumbnail', selectedImage);
+            }
+            if(imagesProduct.length !== 0) {
+                for (const item of imagesProduct) {
+                    dataForm.append('images', item);
+                  }
+            }
+            console.log("sdfjsldfjskdfj: ", imagesProduct)
+           
             axios.put(`${baseURL}/api/v1/product?id=${productId}`, dataForm, {
                 headers: {
                     "Content-Type": "multipart/form-data"
@@ -109,7 +132,7 @@ const ProductDetail = () => {
                 res.data.images.map((item) => {
                     xyz.push(item.slice(0,-1))
                 })
-                setImagesProduct(xyz);
+                setImagesProductOriginal(xyz);
 
                 // // GET THUMBNAIL PRODUCT
                 // axios.get(`${baseURL}/api/v1/user/image?filename=${res.data.thumbnail}`)
@@ -250,7 +273,7 @@ const ProductDetail = () => {
                             <img src={
                                 selectedImage1 ?
                                     URL.createObjectURL(selectedImage1)
-                                    : imagesProduct[0] !== undefined ? imagesProduct[0] : NoneProduct
+                                    : imagesProductOriginal[0] !== undefined ? imagesProductOriginal[0] : NoneProduct
                             }
                                 style={{ width: 100 }}>
 
@@ -260,6 +283,7 @@ const ProductDetail = () => {
                                 className="inputfileList"
                                 onChange={(event) => {
                                     setSelectedImage1(event.target.files[0]);
+                                    // setImagesProduct(imagesProduct?.push(event.target.files[0]))
                                 }}
                             />
                         </div>
@@ -269,7 +293,7 @@ const ProductDetail = () => {
                             <img src={
                                 selectedImage2 ?
                                     URL.createObjectURL(selectedImage2)
-                                    : imagesProduct[1] !== undefined ? imagesProduct[1] : NoneProduct
+                                    : imagesProductOriginal[1] !== undefined ? imagesProductOriginal[1] : NoneProduct
                             }
                                 style={{ width: 100 }}>
 
@@ -279,6 +303,7 @@ const ProductDetail = () => {
                                 className="inputfileList"
                                 onChange={(event) => {
                                     setSelectedImage2(event.target.files[0]);
+                                    // setImagesProduct(imagesProduct?.push(event.target.files[0]))
                                 }}
                             />
                         </div>
@@ -288,7 +313,7 @@ const ProductDetail = () => {
                             <img src={
                                 selectedImage3 ?
                                     URL.createObjectURL(selectedImage3)
-                                    : imagesProduct[2] !== undefined ? imagesProduct[2] : NoneProduct
+                                    : imagesProductOriginal[2] !== undefined ? imagesProductOriginal[2] : NoneProduct
                             }
                                 style={{ width: 100 }}>
 
@@ -298,6 +323,7 @@ const ProductDetail = () => {
                                 className="inputfileList"
                                 onChange={(event) => {
                                     setSelectedImage3(event.target.files[0]);
+                                    // setImagesProduct(imagesProduct?.push(event.target.files[0]))
                                 }}
                             />
                         </div>

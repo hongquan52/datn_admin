@@ -10,7 +10,10 @@ import StarRateIcon from '@mui/icons-material/StarRate';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function BasicTable() {
   const navigate = useNavigate();
@@ -24,49 +27,91 @@ export default function BasicTable() {
       .then((res) => {
         // lấy danh sách CUSTOMER (roldId === 1)
         let x = res.data.filter(
-          (item) => item.role.id === 1
+          (item) => item.role.id === 2
         )
         setUserList(x);
       })
       .catch((err) => console.log(err))
   }, [])
-
+  React.useEffect(() => {
+    // GET ALL USER
+    axios.get(`${baseURL}/api/v1/user`)
+      .then((res) => {
+        // lấy danh sách CUSTOMER (roldId === 1)
+        let x = res.data.filter(
+          (item) => item.role.id === 1
+        )
+        setUserList(x);
+      })
+      .catch((err) => console.log(err))
+  }, [lockProduct])
+  const showToastMessageSuccess = (message) => {
+    toast.success(message, {
+        position: toast.POSITION.TOP_RIGHT
+    });
+  };
   const columns = [
     { field: "id", headerName: "ID", width: 60 },
     {
       field: "name", headerName: "Name", width: 200
     },
     { field: "email", headerName: "Email", width: 250 },
-    { field: "phone", headerName: "Phone", width: 130 },
+    { field: "phone", headerName: "Phone", width: 150 },
     {
-      field: "status", headerName: "Status", width: 100, renderCell: (params) => {
+      field: "status", headerName: "Status", width: 150, renderCell: (params) => {
         if (params.row.status === true) {
-          return <p style={{ backgroundColor: 'green', color: 'white', padding: 10, fontWeight: 600 }}>Active</p>
+          return <p style={{ backgroundColor: 'green', color: 'white', padding: 10, fontWeight: 600, width: 60, textAlign: "center" }}>Active</p>
         }
         else {
-          return <p style={{ backgroundColor: 'grey', color: 'white', padding: 10, fontWeight: 600 }}>Unactive</p>
+          return <p style={{ backgroundColor: 'grey', color: 'white', padding: 10, fontWeight: 600, width: 60, textAlign: "center" }}>Unactive</p>
         }
       }
     },
     {
-      field: "action", headerName: "Action", width: 150, renderCell: (params) => {
+      field: "action", headerName: "Action", width: 200, renderCell: (params) => {
         return (
           <div style={{ display: 'flex' }}>
-            <button
+            {/* <button
               style={{ padding: 10, outline: 'none', border: 'none', backgroundColor: '#FF919D', color: "white", cursor: 'pointer' }}
 
             >
               <EditIcon />
               
-            </button>
+            </button> */}
             <button
               style={{ padding: 10, outline: 'none', border: 'none', backgroundColor: 'grey', color: "white", marginLeft: 10, cursor: 'pointer' }}
               onClick={() => {
-                alert(params.row.id);
-                setLockProduct(!lockProduct);
+                
+                axios.put(`${baseURL}/api/v1/user/updateUserStatus?id=${params.row.id}&status=${!params.row.status}`)
+                .then((res) => {
+                  setLockProduct(!lockProduct);
+                  showToastMessageSuccess("Update status user success");
+                  
+                })
+                .catch((err) => console.log(err))
               }}
             >
-              {lockProduct ? <LockIcon /> : <LockOpenIcon />}
+              {
+                params.row.status ? <LockIcon /> : <LockOpenIcon />
+              }
+             
+            </button>
+            <button
+              style={{ padding: 10, outline: 'none', border: 'none', backgroundColor: 'red', color: "white", cursor: 'pointer',marginLeft: 10 }}
+              onClick={() => {
+                axios.delete(`${baseURL}/api/v1/user/softDelete?id=${params.row.id}&deleted=${!params.row.deleted}`)
+                .then((res) => {
+                  setLockProduct(!lockProduct);
+                  showToastMessageSuccess("Remove user successfully!");
+                  
+                })
+                .catch((err) => console.log(err))
+
+              }}
+
+            >
+              <DeleteIcon />
+              
             </button>
           </div>
         )
@@ -83,6 +128,7 @@ export default function BasicTable() {
   })
   return (
     <>
+      <ToastContainer />
       <div style={{ display: 'flex', justifyContent: "flex-end", justifyContent: 'space-between', marginBottom: 10 }}>
         <div style={{ display: 'flex', alignItems: "center", width: 134, height: 56}}>
           <div className="productFilter__search-input">
@@ -104,7 +150,9 @@ export default function BasicTable() {
 
         <DataGrid className='data__grid'
           style={{ backgroundColor: 'white' }}
-          rows={searchCustomer}
+          rows={searchCustomer.filter(
+            (item) => item.deleted === false
+          )}
           columns={columns}
 
           pageSize={6}
