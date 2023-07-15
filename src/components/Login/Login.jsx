@@ -4,10 +4,24 @@ import jwtDecode from 'jwt-decode'
 import { baseURL } from '../../constants/baseURL';
 import './Login.css'
 import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const Login = () => {
     const navigate = useNavigate();
     const [userName, setUserName] = useState('');
     const [password, setPassword] = useState('');
+
+    const showToastMessageSuccess = (message) => {
+        toast.success(message, {
+            position: toast.POSITION.TOP_RIGHT
+        });
+    };
+    const showToastMessageError = (message) => {
+        toast.error(message, {
+            position: toast.POSITION.TOP_RIGHT
+        });
+    };
+
     const loginHandle = () => {
 
         var data = new FormData();
@@ -23,6 +37,9 @@ const Login = () => {
                     navigate('/home');
                     window.location.reload();
                 }
+                else {
+                    showToastMessageError('Your phone or password is incorrect. Please enter again!')
+                }
             })
     }
     const decoded = (token) => {
@@ -35,6 +52,7 @@ const Login = () => {
     return (
         <div style={{ display: 'flex', width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
             <div className='login__container'>
+                <ToastContainer />
                 <div className='login__header-container'>
                     <h5>Admin Dashboard</h5>
                 </div>

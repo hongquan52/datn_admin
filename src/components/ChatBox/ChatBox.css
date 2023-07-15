@@ -38,8 +38,7 @@
 }
 .chat__sidebar-item:hover {
     cursor: pointer;
-    opacity: 0.9;
-    background-color: white;
+    background-color: #e5b1b7;
 }
 .chat__sidebar-item h5 {
     font-weight: bold;
@@ -48,7 +47,7 @@
 .chat__content-container {
     border-left: black solid 1px;
     background-color: white;
-    width: 700px;
+    width: 600px;
 }
 .chat__content-header {
     display: flex;
@@ -90,11 +89,12 @@
 .chat__content-footer{
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: space-between;
     padding: 10px;
 }
 .chat__content-footer input {
-    width: 600px;
+    width: 500px;
+    
 }
 .chat__content-footer button{
     background-color: #FF919D;
@@ -103,7 +103,11 @@
     border-radius: 5px;
     outline: none;
     border: none;
-    font-weight: bold;
+    font-size: 13px;
+}
+.chat__content-footer button:hover {
+    cursor: pointer;
+    background-color: #e5b1b7;
 }
 
 @media screen and (max-width: 1200px) {

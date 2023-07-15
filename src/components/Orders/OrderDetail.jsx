@@ -7,20 +7,50 @@ import ClearIcon from '@mui/icons-material/Clear';
 import "./Orders.css";
 import axios from "axios";
 import { baseURL } from "../../constants/baseURL";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const OrderDetail = () => {
     const { orderId } = useParams();
     const [orderDetailData, setOrderDetailData] = useState({});
     const [open, setOpen] = useState(false);
     const [shipperList, setShipperList] = useState([]);
 
+    const [ward, setWard] = useState('');
+    const [district, setDistrict] = useState('');
+
     const [shipperId, setShipperId] = useState('');
 
     const handleChangeShipper = (event) => {
         setShipperId(event.target.value);
       };
+    // NOTIFY
+    const showToastMessage = (message) => {
+        toast.success(message, {
+            position: toast.POSITION.TOP_RIGHT
+        });
+    };
     useEffect(() => {
         axios.get(`${baseURL}/api/v1/order/${orderId}`)
-            .then((res) => setOrderDetailData(res.data))
+            .then((res) => {
+                setOrderDetailData(res.data);
+                
+                if(res.data.deliveryWard[0] === '{') {
+                    let x = JSON.parse(res.data.deliveryWard)
+                    setWard(x.ward_name);
+                }
+                else {
+                    setWard(res.data.deliveryWard);
+                }
+                if(res.data.deliveryDistrict[0] === '{') {
+                    let x = JSON.parse(res.data.deliveryDistrict)
+                    setDistrict(x.district_name);
+                }
+                else {
+                    setDistrict(res.data.deliveryDistrict);
+                }
+
+            })
             .catch((err) => console.log(err))
         // GET ALL SHIPPER:
         axios.get(`${baseURL}/api/v1/user/shipper`)
@@ -34,7 +64,7 @@ const OrderDetail = () => {
         data.append('orderId', orderId);
         data.append('shipperId', shipperId);
         axios.post(`${baseURL}/api/v1/delivery`, data)
-            .then((res) => alert(res.data.message))
+            .then((res) => showToastMessage(res.data.message))
             .catch((err) => console.log(err))
     }
     // UPDATE STATUS ORDER
@@ -54,11 +84,12 @@ const OrderDetail = () => {
             },
         };
         axios.put(`${baseURL}/api/v1/order?orderId=${orderId}`, dataRaw, config)
-            .then((res) => alert(res.data.message))
+            .then((res) => showToastMessage(res.data.message))
             .catch((err) => console.log("Update status: ", err))
     }
     return (
         <div className="MainDash">
+            <ToastContainer />
             <Modal
                 open={open}
                 onClose={() => setOpen(!open)}
@@ -73,7 +104,10 @@ const OrderDetail = () => {
                         <label className="orderDetail__label">Address</label>
                         <textarea
                             className="orderDetail__input1"
-                            value={orderDetailData.deliveryApartmentNumber + ", " + orderDetailData.deliveryWard + ", " + orderDetailData.deliveryDistrict + ", " + orderDetailData.deliveryProvince}
+                            value={orderDetailData.deliveryApartmentNumber + ", " + 
+                            ward+", " + 
+                            district + ", " + 
+                            orderDetailData.deliveryProvince}
                         />
                     </div>
                     <div className="orderDetail__info-container" style={{marginTop: 50}}>
@@ -158,7 +192,7 @@ const OrderDetail = () => {
                         <label className="orderDetail__label">Address</label>
                         <textarea
                             className="orderDetail__input1"
-                            value={orderDetailData.deliveryApartmentNumber + ", " + orderDetailData.deliveryWard + ", " + orderDetailData.deliveryDistrict + ", " + orderDetailData.deliveryProvince}
+                            value={orderDetailData.deliveryApartmentNumber + ", " + ward + ", " + district + ", " + orderDetailData.deliveryProvince}
                         />
                     </div>
                 </div>
@@ -183,7 +217,8 @@ const OrderDetail = () => {
                 <button 
                     style={{ backgroundColor: '#F9813A' }} 
                     onClick={() => setOpen(true)}
-                    disabled={ orderDetailData.status === 'Ordered' ? false : true }
+                    // disabled={ orderDetailData.status !== 'Confirmed' ? true : false }
+                    disabled={ orderDetailData.status === 'Confirmed' ? false : true }
                 >
                     <LocalShippingIcon />
                 </button>
