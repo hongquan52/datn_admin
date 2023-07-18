@@ -1,5 +1,8 @@
 import React, {Suspense} from 'react'
 import { Routes, Route, Navigate, useParams } from 'react-router-dom'
+import Attribute from '../components/Attribute/Attribute';
+import Banner from '../components/Banner/Banner';
+import Delivery from '../components/Delivery/Delivery';
 
 // import MainDash from '../components/MainDash/MainDash'
 // import Orders from '../components/Orders/Orders'
@@ -46,6 +49,10 @@ const Routers = () => {
         <Route path='/new-customer' element={<NewCustomer />} />
         <Route path='/static' element={<Statics />} />
         <Route path='/chat-box' element={<ChatBox />} />
+        <Route path='/attribute' element={<Attribute />} />
+        <Route path='/banner' element={<Banner />} />
+        <Route path='/delivery' element={<Delivery />} />
+        
         
       </Routes>
     </Suspense>

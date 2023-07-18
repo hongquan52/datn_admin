@@ -1,4 +1,4 @@
-.MainDashOrder{
+.MainDash{
     /* padding-top: 1rem; */
     display: flex;
     flex-direction: column;
@@ -38,9 +38,6 @@
     border-radius: 10px;
     font-size: 20;
 }
-.orderDetail__footer {
-    margin-top: 20px;
-}
 .orderDetail__footer button {
     color: white;
     outline: none;
@@ -65,7 +62,6 @@
     cursor: pointer;
     opacity: 0.9;
 }
-
 @media screen and (max-width: 1200px) {
     .MainDash{
         justify-content:flex-start;

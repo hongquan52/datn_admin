@@ -82,9 +82,13 @@ const ChatBox = () => {
                 let listCustomer = res.data.filter(
                     (item) => item.role.id == 1
                 )
-                y1.map((mes) => {
+                let y2 = y1.filter(
+                    (item) => typeof(item.userIdFrom) === 'number' || typeof(item.userIdTo) === 'number'
+                )
+
+                y2.map((mes) => {
                     let uniqueCus = listCustomer.find(
-                        (cus) => cus.id === mes.userIdFrom || cus.id === mes.userIdTo
+                        (cus) => cus.id == mes.userIdFrom || cus.id == mes.userIdTo
                     )
                     listCustomerEdit.push({ ...uniqueCus, contentMes: mes.content, timeMes: mes.time, fromMes: mes.userIdFrom });
                 })
@@ -95,6 +99,7 @@ const ChatBox = () => {
                         listCustomerEdit.findIndex((item) => item.id === obj.id) === index
                 );
                 setCustomerList(unique);
+                
 
             })
             .catch((err) => console.log(err))
@@ -163,13 +168,13 @@ const ChatBox = () => {
                                     }}
                                 >
                                     <img
-                                        src={item.image.length > 0 ? item.image.slice(0, -1) : avatar}
+                                        src={item.image?.length > 0 ? item.image.slice(0, -1) : avatar}
 
                                     />
                                     <div>
                                         <h5>{item.name}</h5>
                                         <p style={{ fontSize: 13, width: 200 }}>{
-                                            item.contentMes.length < 30 ? item.contentMes :
+                                            item.contentMes?.length < 30 ? item.contentMes :
                                                 `${item.contentMes.slice(0, 27)}...`
                                         }</p>
 

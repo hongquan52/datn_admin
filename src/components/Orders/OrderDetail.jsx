@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Typography, Box, Modal, FormControl,InputLabel,Select,MenuItem } from '@mui/material'
+import { Typography, Box, Modal, FormControl, InputLabel, Select, MenuItem } from '@mui/material'
 import CheckIcon from '@mui/icons-material/Check';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import ClearIcon from '@mui/icons-material/Clear';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import "./Orders.css";
 import axios from "axios";
 import { baseURL } from "../../constants/baseURL";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import QLPAY from '../../imgs/QLPAY.JPG'
+import COD from '../../imgs/COD.jpg'
 const OrderDetail = () => {
     const { orderId } = useParams();
     const [orderDetailData, setOrderDetailData] = useState({});
@@ -23,10 +25,15 @@ const OrderDetail = () => {
 
     const handleChangeShipper = (event) => {
         setShipperId(event.target.value);
-      };
+    };
     // NOTIFY
     const showToastMessage = (message) => {
         toast.success(message, {
+            position: toast.POSITION.TOP_RIGHT
+        });
+    };
+    const showToastMessageError = (message) => {
+        toast.error(message, {
             position: toast.POSITION.TOP_RIGHT
         });
     };
@@ -34,15 +41,15 @@ const OrderDetail = () => {
         axios.get(`${baseURL}/api/v1/order/${orderId}`)
             .then((res) => {
                 setOrderDetailData(res.data);
-                
-                if(res.data.deliveryWard[0] === '{') {
+
+                if (res.data.deliveryWard[0] === '{') {
                     let x = JSON.parse(res.data.deliveryWard)
                     setWard(x.ward_name);
                 }
                 else {
                     setWard(res.data.deliveryWard);
                 }
-                if(res.data.deliveryDistrict[0] === '{') {
+                if (res.data.deliveryDistrict[0] === '{') {
                     let x = JSON.parse(res.data.deliveryDistrict)
                     setDistrict(x.district_name);
                 }
@@ -59,92 +66,45 @@ const OrderDetail = () => {
     }, [])
     // CREATE DELIVERY FUNCTION
     const createDelivery = () => {
-        var data = new FormData();
-        data.append('addressId', orderDetailData.addressId);
-        data.append('orderId', orderId);
-        data.append('shipperId', shipperId);
-        axios.post(`${baseURL}/api/v1/delivery`, data)
-            .then((res) => showToastMessage(res.data.message))
-            .catch((err) => console.log(err))
+        if (shipperId === '') {
+            showToastMessageError('Vui lòng chọn người giao hàng!');
+        }
+        else {
+            var data = new FormData();
+            data.append('addressId', orderDetailData.addressId);
+            data.append('orderId', orderId);
+            data.append('shipperId', shipperId);
+            axios.post(`${baseURL}/api/v1/delivery`, data)
+                .then((res) => showToastMessage(res.data.message))
+                .catch((err) => console.log(err))
+        }
     }
     // UPDATE STATUS ORDER
     const updateStatus = (status) => {
+
         let dataRaw = JSON.stringify({
             "totalPrice": orderDetailData.totalPrice,
             "shippingFee": orderDetailData.shippingFee,
             "finalPrice": orderDetailData.finalPrice,
-            "addressId":orderDetailData.addressId,
+            "addressId": orderDetailData.addressId,
             "note": orderDetailData.note,
             "status": status,
             "paymentMethod": orderDetailData.paymentMethod
-          });
+        });
         let config = {
-            headers: { 
-              'Content-Type': 'application/json'
+            headers: {
+                'Content-Type': 'application/json'
             },
         };
         axios.put(`${baseURL}/api/v1/order?orderId=${orderId}`, dataRaw, config)
             .then((res) => showToastMessage(res.data.message))
             .catch((err) => console.log("Update status: ", err))
+
     }
     return (
         <div className="MainDash">
             <ToastContainer />
-            <Modal
-                open={open}
-                onClose={() => setOpen(!open)}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-            >
-                <Box sx={style}>
-                    <Typography id="modal-modal-title" variant="h6" component="h2">
-                        Create delivery
-                    </Typography>
-                    <div className="orderDetail__info-container">
-                        <label className="orderDetail__label">Address</label>
-                        <textarea
-                            className="orderDetail__input1"
-                            value={orderDetailData.deliveryApartmentNumber + ", " + 
-                            ward+", " + 
-                            district + ", " + 
-                            orderDetailData.deliveryProvince}
-                        />
-                    </div>
-                    <div className="orderDetail__info-container" style={{marginTop: 50}}>
-                        <label className="orderDetail__label">Shipper</label>
-                        <FormControl
-                            style={{ width: 250, marginLeft: 50}}
-                        >
-                            <InputLabel>Shipper</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
-                                value={shipperId}
-                                label="Shipper"
-                                onChange={handleChangeShipper}
-                                style={{ backgroundColor: 'white' }}
-                            >
-                                {
-                                    shipperList.map((item) => (
-                                        <MenuItem value={item.id}>{item.name}</MenuItem>
-                                    ))
-                                }
-                                
-                            </Select>
-                        </FormControl>
-                    </div>
-                    <div style={{ display: "flex", justifyContent: 'space-around', marginTop: 60 }}>
-                        <button className="orderDetail__deliveryBtn" onClick={() => {
-                            updateStatus('Wait_Delivering');
-                            createDelivery();
-                            setOpen(false);
-                        }}>
-                            Confirm
-                        </button>
-                        <button className="orderDetail__deliveryBtn" onClick={() => setOpen(false)}>Cancel</button>
-                    </div>
-                </Box>
-            </Modal>
+            
             <h1>Order detail</h1>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <h4>ORDER ID: {orderId}</h4>
@@ -199,11 +159,11 @@ const OrderDetail = () => {
                 <div style={{ marginLeft: 70, display: 'flex', justifyContent: "center", alignItems: 'center' }}>
                     {
                         orderDetailData.paymentMethod === 'VNPAY' ?
-                            <img src='https://inkythuatso.com/uploads/images/2021/12/vnpay-logo-inkythuatso-01-13-16-26-42.jpg'
+                            <img src={QLPAY}
                                 style={{ width: 300, height: 300, borderRadius: 10 }}
                             />
                             :
-                            <img src='https://png.pngtree.com/png-vector/20210529/ourlarge/pngtree-cod-cash-on-delivery-fast-png-image_3382624.jpg'
+                            <img src={COD}
                                 style={{ width: 300, height: 300, borderRadius: 10 }}
                             />
                     }
@@ -211,19 +171,33 @@ const OrderDetail = () => {
                 </div>
             </div>
             <div className="orderDetail__footer">
-                <button style={{ backgroundColor: 'green' }} onClick={() => updateStatus('Confirmed')}>
+                <button
+                    style={{ backgroundColor: orderDetailData.status === 'Ordered' ? 'green' : 'grey' }}
+                    onClick={() => updateStatus('Wait_Delivering')}
+                    disabled={orderDetailData.status === 'Ordered' ? false : true}
+                >
                     <CheckIcon />
                 </button>
-                <button 
-                    style={{ backgroundColor: '#F9813A' }} 
+                {/* <button 
+                    style={{ backgroundColor: orderDetailData.status === 'Confirmed' ? '#F9813A' : 'grey' }} 
                     onClick={() => setOpen(true)}
-                    // disabled={ orderDetailData.status !== 'Confirmed' ? true : false }
+                    
                     disabled={ orderDetailData.status === 'Confirmed' ? false : true }
                 >
                     <LocalShippingIcon />
-                </button>
-                <button style={{ backgroundColor: 'red' }} onClick={() => updateStatus('Canceled')}>
+                </button> */}
+                <button style={{ backgroundColor: orderDetailData.status === 'Ordered' ? 'red' : 'grey' }}
+                    onClick={() => updateStatus('Canceled')}
+                    disabled={orderDetailData.status === 'Ordered' ? false : true}
+                >
                     <ClearIcon />
+                </button>
+                <button
+                    style={{ backgroundColor: orderDetailData.status === 'Delivered' || orderDetailData.status === 'Received' ? 'green' : 'grey' }}
+                    onClick={() => updateStatus('Done')}
+                    disabled={orderDetailData.status === 'Delivered' || orderDetailData.status === 'Received' ? false : true}
+                >
+                    <CheckBoxIcon />
                 </button>
 
             </div>

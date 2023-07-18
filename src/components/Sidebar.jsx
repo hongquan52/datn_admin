@@ -57,6 +57,10 @@ const Sidebar = () => {
                 <AccountBoxIcon fontSize="13px" />
                 <p>Profile</p>
               </div>
+              <div className="sidebar__info-detail" onClick={() => navigate('/chat-box')}>
+                <AccountBoxIcon fontSize="13px" />
+                <p>Chat</p>
+              </div>
               <div className="sidebar__info-detail" onClick={() => logoutHandle()}>
                 <LogoutIcon fontSize="13px" />
                 <p>Logout</p>

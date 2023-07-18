@@ -22,38 +22,43 @@ import img3 from "../imgs/img3.png";
 export const SidebarData = [
   {
     icon: UilEstate,
-    heading: "Dashboard",
+    heading: "Trang chủ",
     path: '/home'
   },
   {
     icon: UilChart,
-    heading: "Statics",
+    heading: "Thống kê",
     path: '/static'
   },
   {
     icon: UilClipboardAlt,
-    heading: "Orders",
+    heading: "Đơn hàng",
     path: '/order'
   },
   {
     icon: UilUsersAlt,
-    heading: "Customers",
+    heading: "Khách hàng",
     path: '/customer'
   },
   {
     icon: UilPackage,
-    heading: 'Products',
+    heading: 'Sản phẩm',
     path: '/product'
   },
   {
-    icon: UilChart,
-    heading: 'Review',
-    path: '/review'
+    icon: UilPackage,
+    heading: 'Bảng hiệu',
+    path: '/banner'
+  },
+  {
+    icon: UilPackage,
+    heading: 'Vận chuyển',
+    path: '/delivery'
   },
   {
     icon: UilChart,
-    heading: 'Chat',
-    path: '/chat-box'
+    heading: 'Đánh giá',
+    path: '/review'
   },
 ];
 

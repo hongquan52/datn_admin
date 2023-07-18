@@ -12,7 +12,8 @@ import Paper from "@mui/material/Paper";
 import "./TableOrder.css";
 import axios from "axios";
 import { baseURL } from "../../constants/baseURL";
-
+import QLPAY from '../../imgs/QLPAY.JPG'
+import COD from '../../imgs/COD.jpg'
 import StarRateIcon from '@mui/icons-material/StarRate';
 import { useNavigate } from "react-router-dom";
 
@@ -72,15 +73,15 @@ export default function BasicTable() {
     { field: "paymentMethod", headerName: "Payment", width: 200, renderCell: (params) => {
         if(params.row.paymentMethod === 'VNPAY') {
             return (
-                <img src='https://inkythuatso.com/uploads/images/2021/12/vnpay-logo-inkythuatso-01-13-16-26-42.jpg'
-                    style={{width: 80, height: 80, borderRadius: 10}}
+                <img src={QLPAY}
+                    style={{width: 60, height: 60, borderRadius: 10}}
                 />
             )
         }
         else {
             return (
-                <img src='https://png.pngtree.com/png-vector/20210529/ourlarge/pngtree-cod-cash-on-delivery-fast-png-image_3382624.jpg'
-                    style={{width: 80, height: 80, borderRadius: 10}}
+                <img src={COD}
+                    style={{width: 60, height: 60, borderRadius: 10}}
                 />
             )
         }
@@ -138,7 +139,7 @@ export default function BasicTable() {
           return (
               <p
                   className='order__status-view'
-                  style={{padding: 10,borderRadius: 10,fontWeight: 'bold',backgroundColor:'red', color: 'white'}}
+                  style={{padding: 10,borderRadius: 10,fontWeight: 'bold',backgroundColor:'green', color: 'white'}}
               >Delivered</p>
           )
       }
@@ -203,4 +204,4 @@ export default function BasicTable() {
   );
 }
 
-const statusList = ['Ordered','Confirmed', 'Wait_Delivering', 'Delivering', 'Delivered', 'Done', 'Cancel']
+const statusList = ['Ordered','Wait_Delivering', 'Delivering', 'Delivered', 'Done', 'Cancel']

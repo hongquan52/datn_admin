@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./ProductDetail.css";
 import "./UploadImage.css";
 import { useNavigate, useParams } from "react-router-dom";
-import { Select, FormControl, MenuItem, InputLabel } from '@mui/material'
+import { Select, FormControl, MenuItem, InputLabel, Modal, Box, Typography } from '@mui/material'
 import axios from "axios";
 import { baseURL } from "../../constants/baseURL";
 import { ToastContainer, toast } from 'react-toastify';
@@ -23,12 +23,15 @@ const ProductDetail = () => {
     const { productId } = useParams();
     const [productData, setProductData] = useState([]);
     const [productImage, setProductImage] = useState('');
-
+    const [open, setOpen] = React.useState(false);
     const [brandList, setBrandList] = useState([]);
     const [brand, setBrand] = useState();
     const [categoryList, setCategoryList] = useState([]);
     const [category, setCategory] = useState();
-
+    const [discountProductData, setDiscountProductData] = useState([])
+    const [startDate, setStartDate] = useState();
+    const [endDate, setEndDate] = useState();
+    const [discountID, setDiscountID] = useState(1);
     const [selectedImage, setSelectedImage] = useState('');
 
     const [selectedImage1, setSelectedImage1] = useState('');
@@ -42,17 +45,59 @@ const ProductDetail = () => {
     const [originalImage3, setOriginalImage3] = useState('');
     // FUNCTION====================
     // NOTIFY SUCESS
-    
+    // UPDATE DISOCUNT:
+    const updateDiscount = () => {
+        // COMPARE START / END DATE
+        let x = new Date(startDate);
+        let y = new Date(endDate);
+
+        if (y.getTime() < x.getTime()) {
+            showToastMessageSuccess('Ngày bắt đầu không thể sau ngày kết thúc!');
+        }
+        else {
+            let discountId = parseInt(discountID);
+            let z = formatDateJSON(startDate);
+            let t = formatDateJSON(endDate);
+            axios.post(`${baseURL}/api/v1/discount/product?productId=${productId}&discountId=${discountId}&startDate=${z}&endDate=${t}`)
+                .then((res) => showToastMessageSuccess('Chỉnh sửa giảm giá sản phẩm thành công'))
+                .catch((err) => console.log(err))
+        }
+    }
     const showToastMessageSuccess = (message) => {
         toast.success(message, {
             position: toast.POSITION.TOP_RIGHT
         });
     };
+    function padTo2Digits(num) {
+        return num.toString().padStart(2, '0');
+    }
+    function formatDate(date) {
+        return (
+            [
+                date.getFullYear(),
+                padTo2Digits(date.getMonth() + 1),
+                padTo2Digits(date.getDate()),
+            ].join('-')
+        );
+    }
+    const convertDate = (dateString) => {
+
+        let date_string = dateString; // Apr 03 2020
+        let dateObj = new Date(date_string);
+
+        return formatDate(dateObj);
+
+    }
+    const formatDateJSON = (date) => {
+        let tempDate = new Date(date);
+        var formattedDate = [tempDate.getFullYear(), tempDate.getMonth() + 1, tempDate.getDate(),].join('/');
+        return formattedDate;
+    }
     console.log(category, brand)
     // UPDATE PRODUCT
     const updateProduct = (data) => {
         if (selectedImage === '' && selectedImage1 === '' && selectedImage2 === '' && selectedImage3 === '') {
-            
+
             var dataForm = new FormData();
             dataForm.append('name', data.name);
             dataForm.append('inventory', data.inventory);
@@ -72,17 +117,17 @@ const ProductDetail = () => {
         else {
             {
                 selectedImage1 !== '' &&
-                imagesProduct.push(selectedImage1);
+                    imagesProduct.push(selectedImage1);
             }
             {
                 selectedImage2 !== '' &&
-                imagesProduct.push(selectedImage2);
+                    imagesProduct.push(selectedImage2);
             }
             {
                 selectedImage3 !== '' &&
-                imagesProduct.push(selectedImage3);
+                    imagesProduct.push(selectedImage3);
             }
-    
+
             var dataForm = new FormData();
             dataForm.append('name', data.name);
             dataForm.append('inventory', data.inventory);
@@ -91,17 +136,17 @@ const ProductDetail = () => {
             dataForm.append('brand', brand);
             dataForm.append('category', category);
             dataForm.append('groupProduct', '1');
-            
-            if(selectedImage !== '') {
+
+            if (selectedImage !== '') {
                 dataForm.append('thumbnail', selectedImage);
             }
-            if(imagesProduct.length !== 0) {
+            if (imagesProduct.length !== 0) {
                 for (const item of imagesProduct) {
                     dataForm.append('images', item);
-                  }
+                }
             }
             console.log("sdfjsldfjskdfj: ", imagesProduct)
-           
+
             axios.put(`${baseURL}/api/v1/product?id=${productId}`, dataForm, {
                 headers: {
                     "Content-Type": "multipart/form-data"
@@ -123,14 +168,15 @@ const ProductDetail = () => {
                 setValue('inventory', res.data.inventory);
                 setValue('price', res.data.price);
                 setValue('description', res.data.description);
+                setValue('discount', res.data.discountPercent);
 
                 setBrand(res.data.brandId);
                 setCategory(res.data.categoryId);
-                setProductImage(res.data.thumbnail.slice(0,-1))
+                setProductImage(res.data.thumbnail.slice(0, -1))
                 // IMAGES PRODUCT
                 let xyz = [];
                 res.data.images.map((item) => {
-                    xyz.push(item.slice(0,-1))
+                    xyz.push(item.slice(0, -1))
                 })
                 setImagesProductOriginal(xyz);
 
@@ -141,6 +187,15 @@ const ProductDetail = () => {
                 //         setProductImage(b);
                 //     })
                 //     .catch((err) => console.log(err))
+            })
+            .catch((err) => console.log(err))
+        // GET DISCOUNT
+        axios.get(`${baseURL}/api/v1/discount/product?productId=${productId}`)
+            .then((res) => {
+                setDiscountProductData(res.data);
+                setValue('discount', res.data[0].discount.percent);
+                setStartDate(res.data[0].startDate);
+                setEndDate(res.data[0].endDate);
             })
             .catch((err) => console.log(err))
         // GET ALL BRAND
@@ -159,6 +214,64 @@ const ProductDetail = () => {
     return (
         <div className="MainDash">
             <ToastContainer />
+            <Modal
+                open={open}
+                onClose={() => setOpen(false)}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <Box sx={style}>
+                    <Typography id="modal-modal-title" variant="h6" component="h2">
+                        Chỉnh sửa giảm giá
+                    </Typography>
+                    <div>
+
+                        <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                            Mức giảm giá (%)
+                        </Typography>
+                        <input placeholder="Phần trăm giảm" className='banner__edit-input' defaultValue={productData.discountPercent}
+                            onChange={(e) => setDiscountID(e.target.value)}
+                            type="number"
+                        />
+
+                        <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
+                            <div style={{ marginRight: 10 }}>
+                                <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                                    Ngày bắt đầu
+                                </Typography>
+
+                                <input placeholder="Mã bảng hiệu" className='banner__edit-input' type="date"
+                                    defaultValue={convertDate(discountProductData[0]?.startDate)}
+                                    onChange={(e) => {
+                                        setStartDate(e.target.value);
+
+                                    }}
+                                />
+                            </div>
+                            <div>
+                                <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                                    Ngày kết thúc
+                                </Typography>
+                                <input placeholder="Mã bảng hiệu" className='banner__edit-input' type="date"
+                                    defaultValue={convertDate(discountProductData[0]?.endDate)}
+                                    onChange={(e) => {
+                                        setEndDate(e.target.value);
+
+                                    }}
+                                />
+                            </div>
+                        </div>
+
+                    </div>
+                    <button
+                        onClick={() => updateDiscount()}
+                        style={{padding: 6, marginTop: 20}}
+                        >Lưu giảm giá
+                    </button>
+
+
+                </Box>
+            </Modal>
             <h1>Product detail : {productId}</h1>
             <div style={{ backgroundColor: 'white', width: '90%', borderRadius: 10, padding: 10, display: 'flex' }}>
                 <div>
@@ -240,6 +353,17 @@ const ProductDetail = () => {
 
                             </Select>
                         </FormControl>
+                    </div>
+                    <div className="orderDetail__info-container">
+                        <label className="orderDetail__label">Discount</label>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <input
+                                className="orderDetail__input"
+                                readOnly
+                                {...register("discount")}
+                            />
+                            <button style={{marginLeft: 5 }} onClick={() => setOpen(true)}>Edit</button>
+                        </div>
                     </div>
                 </div>
                 <div style={{ marginLeft: 70, display: 'flex', justifyContent: "center", alignItems: 'center', flexDirection: 'column' }}>
@@ -345,3 +469,16 @@ const ProductDetail = () => {
 };
 
 export default ProductDetail;
+
+const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 600,
+    height: 600,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+};
